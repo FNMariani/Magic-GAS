@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "GameplayTagContainer.h"
+#include "GameplayEffectTypes.h"
+#include "AbilitySystemInterface.h"
 #include "MagicGASCharacter.generated.h"
 
 class USpringArmComponent;
@@ -16,7 +19,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class AMagicGASCharacter : public ACharacter
+class AMagicGASCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -43,10 +46,20 @@ class AMagicGASCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+	class UAbilitySystemComponent* AbilitySystemComponent;
+	
+	UPROPERTY()
+	class UMagicAttributeSet* Attributes;
 
 public:
 	AMagicGASCharacter();
 	
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
+	int MaxHealth = 100;
 
 protected:
 
@@ -69,5 +82,16 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+	virtual void InitializeAttributes();
+	virtual void GiveDefaultAbilities();
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Abilities)
+	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Abilities)
+	TArray<TSubclassOf<class UGameplayAbility>> DefaultAbilities;
 };
 
