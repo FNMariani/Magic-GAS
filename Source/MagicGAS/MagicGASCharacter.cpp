@@ -150,6 +150,9 @@ void AMagicGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMagicGASCharacter::Look);
+		
+		// Looking
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMagicGASCharacter::Attack);
 	}
 	else
 	{
@@ -191,4 +194,10 @@ void AMagicGASCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AMagicGASCharacter::Attack(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Display, TEXT("AMagicGASCharacter::Attack(): %s"), *Value.ToString());
+	
 }
