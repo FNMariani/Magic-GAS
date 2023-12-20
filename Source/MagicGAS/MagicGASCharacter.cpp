@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MagicGASCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -12,6 +14,7 @@
 #include "InputActionValue.h"
 #include "AbilitySystemComponent.h"
 #include "MagicAttributeSet.h"
+#include "Components/WidgetComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -200,4 +203,26 @@ void AMagicGASCharacter::Attack(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp, Display, TEXT("AMagicGASCharacter::Attack(): %s"), *Value.ToString());
 	
+	AbilitySystemComponent->TryActivateAbilitiesByTag(AttackTagsContainer, true);
+}
+
+void AMagicGASCharacter::ShowHealth()
+{
+	bool bSuccessfullyFoundAttribute;
+	float health = UAbilitySystemBlueprintLibrary::GetFloatAttributeFromAbilitySystemComponent(AbilitySystemComponent, UMagicAttributeSet::GetHealthAttribute(), bSuccessfullyFoundAttribute);
+
+	if(bSuccessfullyFoundAttribute)
+	{
+		UE_LOG(LogTemp, Display, TEXT("AMagicGASCharacter::ShowHealth(): %f"), health);
+	}
+}
+
+void AMagicGASCharacter::ShowHealthChange(AMagicGASCharacter* TargetCharacter)
+{
+	if (TargetCharacter && HealthChangeUIClass)
+	{
+		UWidgetComponent* DamageText = NewObject<UWidgetComponent>(TargetCharacter, HealthChangeUIClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	}
 }

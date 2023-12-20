@@ -9,6 +9,16 @@ UMagicAttributeSet::UMagicAttributeSet()
 	
 }
 
+void UMagicAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetHealthAttribute()) 
+	{
+		NewValue = FMath::Clamp<float>(NewValue, 0, 100);
+	}
+}
+
 void UMagicAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

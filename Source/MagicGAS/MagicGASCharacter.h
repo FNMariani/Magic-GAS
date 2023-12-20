@@ -74,6 +74,8 @@ protected:
 	
 	void Attack(const FInputActionValue& Value);
 			
+	UFUNCTION(BlueprintCallable)
+	void ShowHealth();
 
 protected:
 	// APawn interface
@@ -98,5 +100,14 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Abilities)
 	TArray<TSubclassOf<class UGameplayAbility>> DefaultAbilities;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Abilities)
+	FGameplayTagContainer AttackTagsContainer;
+
+	UFUNCTION(BlueprintCallable)
+	void ShowHealthChange(AMagicGASCharacter* TargetCharacter);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = UI)
+	TSubclassOf<class UWidgetComponent> HealthChangeUIClass;
 };
 
